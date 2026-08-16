@@ -1,0 +1,1 @@
+Historique des conversations entre l'étudiant et l'IA.

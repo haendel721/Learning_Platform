@@ -1,0 +1,1 @@
+Gestion des cours, chapitres, vidéos, ressources.
