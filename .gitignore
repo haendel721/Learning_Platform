@@ -1,0 +1,20 @@
+# Environnement
+.env
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Django
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Éditeur / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Django settings (au cas où)
+config/settings/local.py
