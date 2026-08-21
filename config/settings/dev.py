@@ -1,10 +1,6 @@
 from .base import *
-import environ
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-env = environ.Env()
-environ.Env.read_env(BASE_DIR / '.env')
 
 DEBUG = env.bool('DEBUG', default=True)
 SECRET_KEY = env('SECRET_KEY')
@@ -21,3 +17,12 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+MAILERS = {
+    'default': {
+        # Équivalent du console.EmailBackend d'avant — affiche l'email
+        # dans le terminal au lieu de l'envoyer réellement
+        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    },
+}
+DEFAULT_FROM_EMAIL = 'noreply@elearning-ia.local'

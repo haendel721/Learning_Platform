@@ -2,7 +2,10 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from .models import User
-
+from django.core import mail
+from django.test import override_settings
+from .tasks import send_welcome_email
+from unittest.mock import patch
 
 class RegisterTests(APITestCase):
     def test_register_creates_user_with_hashed_password(self):
@@ -72,3 +75,30 @@ class AuthFlowTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['username'], 'charlie')
+
+class EmailTaskTests(APITestCase):
+    @override_settings(
+        # Pendant le test, on force un mailer "en mémoire" —
+        # aucun vrai email, aucun affichage console, juste stocké
+        # dans mail.outbox pour qu'on puisse vérifier son contenu
+        MAILERS={'default': {'BACKEND': 'django.core.mail.backends.locmem.EmailBackend'}}
+    )
+    def test_send_welcome_email_task(self):
+        # .run() exécute la tâche directement en synchrone dans le test
+        # (pas besoin d'un vrai worker Celery qui tourne pour tester la logique)
+        send_welcome_email.run('test@example.com', 'testuser')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['test@example.com'])
+        self.assertIn('testuser', mail.outbox[0].body)
+
+class RegisterEmailTriggerTests(APITestCase):
+    @patch('users.views.send_welcome_email.delay')
+    def test_register_triggers_welcome_email_task(self, mock_delay):
+        # On simule .delay() pour vérifier qu'il est bien APPELÉ,
+        # sans avoir besoin d'un vrai worker Celery pendant les tests
+        url = reverse('register')
+        data = {'username': 'diana', 'password': 'pass12345', 'email': 'diana@example.com'}
+        self.client.post(url, data)
+
+        mock_delay.assert_called_once_with('diana@example.com', 'diana')

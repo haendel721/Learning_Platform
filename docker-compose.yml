@@ -14,6 +14,18 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
-
+  worker:
+    build: .
+    # --pool=solo n'est nécessaire que sous Windows natif —
+    # à l'intérieur d'un conteneur Docker (toujours Linux), ce n'est
+    # plus nécessaire, on peut utiliser le mode par défaut (prefork)
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
 volumes:
   postgres_data:
