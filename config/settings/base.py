@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'users',
     'courses',
+    'ai_service',
+    'quizzes',
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',
@@ -170,3 +172,6 @@ CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://localhost:
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+GROQ_API_KEY = env('GROQ_API_KEY', default='')
+GEMINI_API_KEY = env('GEMINI_API_KEY', default='')

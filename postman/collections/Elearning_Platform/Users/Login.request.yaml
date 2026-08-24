@@ -1,4 +1,14 @@
 $kind: http-request
-url: ""
-method: GET
+name: Login
+url: http://127.0.0.1:8000/api/auth/login/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"username\" : \"marina\",\r
+
+    \    \"password\" : \"marina.10\"\r
+
+    }"
 order: 179826177146308

@@ -1,4 +1,5 @@
 $kind: http-request
-url: ""
+name: Détail d'un cours
+url: http://127.0.0.1:8000/api/courses/1/
 method: GET
 order: 2373909854625721

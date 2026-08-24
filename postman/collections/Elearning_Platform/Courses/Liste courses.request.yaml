@@ -1,4 +1,9 @@
 $kind: http-request
-url: ""
+name: Liste courses
+url: http://127.0.0.1:8000/api/courses/
 method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0vu8}}"
 order: 1787125884874

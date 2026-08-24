@@ -1,2 +1,15 @@
 $kind: collection
 name: Elearning_Platform
+variables:
+  - key: supabase_service_role_api_key_0qol
+    secret: true
+    disabled: false
+  - key: supabase_service_role_api_key_0t9s
+    secret: true
+    disabled: false
+  - key: json_web_token_0t9s
+    secret: true
+    disabled: false
+  - key: json_web_token_0vu8
+    secret: true
+    disabled: false

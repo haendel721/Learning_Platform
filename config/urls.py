@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Interface Swagger visuelle, basée sur le schéma ci-dessus
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/', include('quizzes.urls')),
 ]

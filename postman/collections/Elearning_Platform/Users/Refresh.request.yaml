@@ -1,4 +1,12 @@
 $kind: http-request
-url: ""
-method: GET
+name: Refresh
+url: http://127.0.0.1:8000/api/auth/refresh/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"refresh\" : \"{{supabase_service_role_api_key_0qol}}\"\r
+
+    }"
 order: 879804655029862

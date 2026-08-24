@@ -1,4 +1,12 @@
 $kind: http-request
-url: ""
+name: Me-Autthorization
+url: http://127.0.0.1:8000/api/auth/me/
 method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0t9s}}"
 order: 336854023108557

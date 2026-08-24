@@ -1,4 +1,20 @@
 $kind: http-request
-url: ""
-method: GET
+name: Créer un cours via l'API
+url: http://127.0.0.1:8000/api/courses/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"title\": \"Test permission étudiant\",\r
+
+    \    \"status\": \"draft\",\r
+
+    \    \"difficulty\": \"beginner\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0vu8}}"
 order: 4125093916957052

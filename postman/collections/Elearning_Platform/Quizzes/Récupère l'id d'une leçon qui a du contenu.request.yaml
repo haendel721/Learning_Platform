@@ -1,0 +1,9 @@
+$kind: http-request
+name: Récupère l'id d'une leçon qui a du contenu
+url: http://127.0.0.1:8000/api/lessons/
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0t9s}}"
+order: 1787391209037
