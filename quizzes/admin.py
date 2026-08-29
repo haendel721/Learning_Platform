@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Quiz, Question
+from .models import Quiz, Question, QuizAttempt
 
 
 class QuestionInline(admin.TabularInline):
@@ -12,3 +12,5 @@ class QuestionInline(admin.TabularInline):
 class QuizAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]
     list_display = ('title', 'lesson', 'status', 'created_at')
+
+admin.site.register(QuizAttempt)

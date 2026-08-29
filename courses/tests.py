@@ -43,18 +43,19 @@ class CoursePermissionTests(APITestCase):
         # 403 = authentifié mais pas autorisé (pas 401)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_etudiant_can_read_courses(self):
-        # Un formateur crée d'abord un cours, pour avoir quelque chose à lire
-        Course.objects.create(
-            title='Cours visible', instructor=self.formateur,
-            category=self.category,
-        )
-        token = self._login('eleve', 'pass12345')
-        response = self.client.get(
-            '/api/courses/', HTTP_AUTHORIZATION=f'Bearer {token}',
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        def test_etudiant_can_read_courses(self):
+            Course.objects.create(
+                title='Cours visible', instructor=self.formateur,
+                category=self.category,
+            )
+            token = self._login('eleve', 'pass12345')
+            response = self.client.get(
+                '/api/courses/', HTTP_AUTHORIZATION=f'Bearer {token}',
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # Depuis l'ajout de la pagination, les résultats sont dans
+            # response.data['results'], pas directement dans response.data
+            self.assertEqual(len(response.data['results']), 1)
 
     def test_anonymous_cannot_access_courses(self):
         # Sans token du tout : doit être 401, pas 403

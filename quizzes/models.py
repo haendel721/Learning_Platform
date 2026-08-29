@@ -69,3 +69,47 @@ class Question(models.Model):
 
     def __str__(self):
         return f"Q{self.order}: {self.text[:50]}"
+
+class QuizAttempt(models.Model):
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.CASCADE,
+        related_name='attempts',
+    )
+    student = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='quiz_attempts',
+    )
+
+    # Réponses de l'étudiant, stockées en JSON pour rester flexible
+    # (QCM et questions ouvertes n'ont pas la même forme de réponse).
+    # Exemple : {"1": "Un framework", "2": "Réponse libre de l'étudiant"}
+    # où les clés sont les id des Question
+    answers = models.JSONField(default=dict)
+
+    # Rempli seulement une fois soumis et corrigé —
+    # null=True tant que la tentative est encore "en cours"
+    score = models.FloatField(null=True, blank=True)
+
+    started_at = models.DateTimeField(auto_now_add=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+
+    def calculate_score(self):
+        # Ne prend en compte que les questions QCM pour l'instant —
+        # les questions ouvertes seront corrigées par l'IA plus tard
+        qcm_questions = self.quiz.questions.filter(question_type=Question.QuestionType.QCM)
+
+        if not qcm_questions.exists():
+            return 0.0
+
+        correct_count = 0
+        for question in qcm_questions:
+            student_answer = self.answers.get(str(question.id))
+            if student_answer == question.correct_answer:
+                correct_count += 1
+
+        return round((correct_count / qcm_questions.count()) * 100, 2)
+
+    def __str__(self):
+        return f"{self.student.username} - {self.quiz.title}"

@@ -1,0 +1,12 @@
+$kind: http-request
+name: Créer une tentative
+url: http://127.0.0.1:8000/api/quiz-attempts/
+method: POST
+body:
+  type: json
+  content: "{\r\n    \"quiz\": 2\r\n}"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 4495644036758488

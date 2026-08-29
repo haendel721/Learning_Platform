@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import LessonQuizGenerateView
+from rest_framework.routers import DefaultRouter
+from .views import LessonQuizGenerateView, QuizAttemptViewSet, QuizViewSet
+
+
+router = DefaultRouter()
+router.register('quiz-attempts', QuizAttemptViewSet, basename='quiz-attempt')
+router.register('quizzes', QuizViewSet, basename='quiz')
 
 urlpatterns = [
     path(
@@ -7,4 +13,5 @@ urlpatterns = [
         LessonQuizGenerateView.as_view({'post': 'generate_quiz'}),
         name='generate-quiz',
     ),
-]
+] + router.urls
+

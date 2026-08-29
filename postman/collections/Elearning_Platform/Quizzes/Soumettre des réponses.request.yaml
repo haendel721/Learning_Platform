@@ -1,0 +1,20 @@
+$kind: http-request
+name: Soumettre des réponses
+url: http://127.0.0.1:8000/api/quiz-attempts/4/submit/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"answers\": {\r
+
+    \        \"1\": \"Un framework\"\r
+
+    \    }\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 4502144220597402

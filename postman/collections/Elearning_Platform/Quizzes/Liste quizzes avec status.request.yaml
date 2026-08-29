@@ -1,0 +1,9 @@
+$kind: http-request
+name: Liste quizzes avec status
+url: http://127.0.0.1:8000/api/quizzes/
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 4422872817872700

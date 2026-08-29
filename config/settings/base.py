@@ -65,6 +65,15 @@ REST_FRAMEWORK = {
     # Indique à DRF d'utiliser drf-spectacular pour générer
     # la documentation OpenAPI/Swagger automatiquement
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+     # S'applique à TOUTES les ViewSets automatiquement,
+    # pas besoin de le répéter dans chaque vue
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    # UserRateThrottle limite par utilisateur connecté (basé sur son id) —
+    # on ne l'active pas globalement ici, seulement sur l'endpoint IA précis
+    'DEFAULT_THROTTLE_RATES': {
+        'ai_generation': '30/min',
+    },
 }
 
 MIDDLEWARE = [
@@ -96,6 +105,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
