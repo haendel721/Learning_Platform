@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from certificates.views import verify_certificate, EnrollmentCertificateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +29,10 @@ urlpatterns = [
     # Interface Swagger visuelle, basée sur le schéma ci-dessus
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/', include('quizzes.urls')),
+    path('verify/<uuid:certificate_id>/', verify_certificate, name='verify-certificate'),
+    path(
+        'api/enrollments/<int:enrollment_id>/certificate/',
+        EnrollmentCertificateView.as_view(),
+        name='enrollment-certificate',
+    ),
 ]

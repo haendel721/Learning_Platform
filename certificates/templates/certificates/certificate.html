@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page {
+        size: A4 landscape;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Helvetica", sans-serif;
+        text-align: center;
+        padding: 80px;
+        border: 10px solid #2c3e50;
+        margin: 20px;
+      }
+
+      h1 {
+        font-size: 42px;
+        color: #2c3e50;
+      }
+
+      .student-name {
+        font-size: 32px;
+        font-weight: bold;
+        color: #e67e22;
+        margin: 30px 0;
+      }
+
+      .course-title {
+        font-size: 24px;
+        margin: 20px 0;
+      }
+
+      .date {
+        margin-top: 60px;
+        font-size: 16px;
+        color: #7f8c8d;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Certificat de réussite</h1>
+    <p>Ce certificat est décerné à</p>
+    <div class="student-name">{{ student_name }}</div>
+    <p>pour avoir complété avec succès le cours</p>
+    <div class="course-title">{{ course_title }}</div>
+    <div class="date">Délivré le {{ issued_date }}</div>
+    <img
+      title="QR Code"
+      src="data:image/png;base64,{{ qr_code_base64 }}"
+      width="100"
+      style="margin-top: 20px"
+    />
+  </body>
+</html>

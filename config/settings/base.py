@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'courses',
     'ai_service',
     'quizzes',
+    'certificates',
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',

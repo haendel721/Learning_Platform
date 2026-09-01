@@ -1,5 +1,9 @@
 $kind: http-request
 name: Déclenche la génération
-url: http://127.0.0.1:8000/api/lessons/{2}/generate-quiz/
+url: http://127.0.0.1:8000/api/lessons/1/generate-quiz/
 method: POST
+auth:
+  type: bearer
+  credentials:
+    token: ""
 order: 3421042424903869

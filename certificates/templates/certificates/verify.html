@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Vérification de certificat</title>
+  </head>
+  <body style="font-family: sans-serif; text-align: center; padding: 50px">
+    <h1>✅ Certificat authentique</h1>
+    <p><strong>{{ certificate.enrollment.student.username }}</strong></p>
+    <p>
+      a complété le cours
+      <strong>{{ certificate.enrollment.course.title }}</strong>
+    </p>
+    <p>Délivré le {{ certificate.issued_at|date:"d/m/Y" }}</p>
+  </body>
+</html>
