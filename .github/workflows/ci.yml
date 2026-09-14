@@ -1,0 +1,62 @@
+name: Tests Django
+
+# Déclenche le pipeline à chaque push et à chaque pull request
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # GitHub Actions peut démarrer des services temporaires (Postgres,
+    # Redis) pour la durée du job, comme un docker-compose éphémère
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # Attend que Postgres soit prêt avant de lancer les tests,
+        # même principe que le healthcheck du docker-compose.yml
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Lancer les tests
+        env:
+          # Variables d'environnement nécessaires pour que Django
+          # puisse se connecter aux services Postgres/Redis ci-dessus
+          DEBUG: "True"
+          SECRET_KEY: "cle-de-test-pour-ci-uniquement"
+          DB_NAME: test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_HOST: localhost
+          DB_PORT: 5432
+          CELERY_BROKER_URL: redis://localhost:6379/0
+          CELERY_RESULT_BACKEND: redis://localhost:6379/1
+          GROQ_API_KEY: "fake-key-not-used-in-tests"
+          GEMINI_API_KEY: "fake-key-not-used-in-tests"
+          DJANGO_SETTINGS_MODULE: config.settings.dev
+        run: python manage.py test
