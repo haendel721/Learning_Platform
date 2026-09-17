@@ -49,3 +49,4 @@ MAILERS = {
     },
 }
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@elearning-ia.local')
+
