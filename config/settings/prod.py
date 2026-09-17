@@ -50,3 +50,21 @@ MAILERS = {
 }
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@elearning-ia.local')
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        # 'django.request' capture spécifiquement les erreurs 500
+        # liées aux requêtes HTTP (exactement notre cas ici)
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
