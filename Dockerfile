@@ -46,7 +46,7 @@ COPY . .
 
 EXPOSE 8000
 
-RUN python manage.py collectstatic --noinput --settings=config.settings.prod
+# RUN python manage.py collectstatic --noinput --settings=config.settings.prod
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
