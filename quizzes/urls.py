@@ -4,14 +4,13 @@ from .views import LessonQuizGenerateView, QuizAttemptViewSet, QuizViewSet
 
 
 router = DefaultRouter()
-router.register('quiz-attempts', QuizAttemptViewSet, basename='quiz-attempt')
-router.register('quizzes', QuizViewSet, basename='quiz')
+router.register("quiz-attempts", QuizAttemptViewSet, basename="quiz-attempt")
+router.register("quizzes", QuizViewSet, basename="quiz")
 
 urlpatterns = [
     path(
-        'lessons/<int:pk>/generate-quiz/',
-        LessonQuizGenerateView.as_view({'post': 'generate_quiz'}),
-        name='generate-quiz',
+        "lessons/<int:pk>/generate-quiz/",
+        LessonQuizGenerateView.as_view({"post": "generate_quiz"}),
+        name="generate-quiz",
     ),
 ] + router.urls
-

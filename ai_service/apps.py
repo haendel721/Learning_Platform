@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class AiServiceConfig(AppConfig):
-    name = 'ai_service'
+    name = "ai_service"

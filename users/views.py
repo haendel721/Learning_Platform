@@ -1,6 +1,4 @@
 from rest_framework import generics, permissions
-from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .tasks import send_welcome_email
 from .models import User
@@ -12,6 +10,7 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+
     def perform_create(self, serializer):
         # perform_create() est appelée juste après la validation,
         # avant la réponse HTTP — c'est l'endroit idéal pour déclencher

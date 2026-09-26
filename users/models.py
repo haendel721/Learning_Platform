@@ -10,9 +10,9 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         # TextChoices génère automatiquement les tuples (valeur, libellé)
         # utilisés par Django dans les formulaires et l'admin.
-        ADMIN = 'admin', 'Administrateur'
-        FORMATEUR = 'formateur', 'Formateur'
-        ETUDIANT = 'etudiant', 'Étudiant'
+        ADMIN = "admin", "Administrateur"
+        FORMATEUR = "formateur", "Formateur"
+        ETUDIANT = "etudiant", "Étudiant"
 
     role = models.CharField(
         max_length=20,

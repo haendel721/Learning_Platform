@@ -8,21 +8,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('quizzes', '0001_initial'),
+        ("quizzes", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='QuizAttempt',
+            name="QuizAttempt",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answers', models.JSONField(default=dict)),
-                ('score', models.FloatField(blank=True, null=True)),
-                ('started_at', models.DateTimeField(auto_now_add=True)),
-                ('submitted_at', models.DateTimeField(blank=True, null=True)),
-                ('quiz', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='attempts', to='quizzes.quiz')),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='quiz_attempts', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("answers", models.JSONField(default=dict)),
+                ("score", models.FloatField(blank=True, null=True)),
+                ("started_at", models.DateTimeField(auto_now_add=True)),
+                ("submitted_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "quiz",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="attempts",
+                        to="quizzes.quiz",
+                    ),
+                ),
+                (
+                    "student",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="quiz_attempts",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

@@ -9,33 +9,84 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('courses', '0002_lesson'),
+        ("courses", "0002_lesson"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Quiz',
+            name="Quiz",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('status', models.CharField(choices=[('pending', 'En attente'), ('ready', 'Prêt'), ('failed', 'Échec')], default='pending', max_length=20)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('lesson', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='quizzes', to='courses.lesson')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "En attente"),
+                            ("ready", "Prêt"),
+                            ("failed", "Échec"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "lesson",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="quizzes",
+                        to="courses.lesson",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.TextField()),
-                ('question_type', models.CharField(choices=[('qcm', 'Choix multiple'), ('open', 'Question ouverte')], default='qcm', max_length=10)),
-                ('choices', models.JSONField(blank=True, null=True)),
-                ('correct_answer', models.TextField()),
-                ('order', models.PositiveIntegerField(default=0)),
-                ('quiz', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='quizzes.quiz')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("text", models.TextField()),
+                (
+                    "question_type",
+                    models.CharField(
+                        choices=[
+                            ("qcm", "Choix multiple"),
+                            ("open", "Question ouverte"),
+                        ],
+                        default="qcm",
+                        max_length=10,
+                    ),
+                ),
+                ("choices", models.JSONField(blank=True, null=True)),
+                ("correct_answer", models.TextField()),
+                ("order", models.PositiveIntegerField(default=0)),
+                (
+                    "quiz",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="questions",
+                        to="quizzes.quiz",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['order'],
+                "ordering": ["order"],
             },
         ),
     ]

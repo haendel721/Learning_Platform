@@ -8,18 +8,18 @@ class Quiz(models.Model):
     lesson = models.ForeignKey(
         Lesson,
         on_delete=models.CASCADE,
-        related_name='quizzes',
+        related_name="quizzes",
     )
 
     title = models.CharField(max_length=200)
 
     # Champ utile pour savoir si la génération IA a fini, échoué,
     # ou est encore en cours — indispensable puisque generate-quiz/
-    # tournera en tâche Celery async 
+    # tournera en tâche Celery async
     class Status(models.TextChoices):
-        PENDING = 'pending', 'En attente'
-        READY = 'ready', 'Prêt'
-        FAILED = 'failed', 'Échec'
+        PENDING = "pending", "En attente"
+        READY = "ready", "Prêt"
+        FAILED = "failed", "Échec"
 
     status = models.CharField(
         max_length=20,
@@ -32,15 +32,16 @@ class Quiz(models.Model):
     def __str__(self):
         return f"Quiz: {self.title} ({self.lesson.title})"
 
+
 class Question(models.Model):
     class QuestionType(models.TextChoices):
-        QCM = 'qcm', 'Choix multiple'
-        OPEN = 'open', 'Question ouverte'
+        QCM = "qcm", "Choix multiple"
+        OPEN = "open", "Question ouverte"
 
     quiz = models.ForeignKey(
         Quiz,
         on_delete=models.CASCADE,
-        related_name='questions',
+        related_name="questions",
     )
 
     text = models.TextField()
@@ -65,21 +66,22 @@ class Question(models.Model):
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
-        ordering = ['order']
+        ordering = ["order"]
 
     def __str__(self):
         return f"Q{self.order}: {self.text[:50]}"
+
 
 class QuizAttempt(models.Model):
     quiz = models.ForeignKey(
         Quiz,
         on_delete=models.CASCADE,
-        related_name='attempts',
+        related_name="attempts",
     )
     student = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='quiz_attempts',
+        related_name="quiz_attempts",
     )
 
     # Réponses de l'étudiant, stockées en JSON pour rester flexible
@@ -98,7 +100,9 @@ class QuizAttempt(models.Model):
     def calculate_score(self):
         # Ne prend en compte que les questions QCM pour l'instant —
         # les questions ouvertes seront corrigées par l'IA plus tard
-        qcm_questions = self.quiz.questions.filter(question_type=Question.QuestionType.QCM)
+        qcm_questions = self.quiz.questions.filter(
+            question_type=Question.QuestionType.QCM
+        )
 
         if not qcm_questions.exists():
             return 0.0

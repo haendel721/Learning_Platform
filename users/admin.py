@@ -7,11 +7,9 @@ from .models import User
 # pour qu'il affiche aussi notre champ "role" personnalisé.
 class CustomUserAdmin(UserAdmin):
     # Ajoute "role" à la liste des colonnes affichées
-    list_display = UserAdmin.list_display + ('role',)
+    list_display = UserAdmin.list_display + ("role",)
     # Ajoute "role" aux champs éditables sur la fiche utilisateur
-    fieldsets = UserAdmin.fieldsets + (
-        ('Rôle', {'fields': ('role',)}),
-    )
+    fieldsets = UserAdmin.fieldsets + (("Rôle", {"fields": ("role",)}),)
 
 
 admin.site.register(User, CustomUserAdmin)

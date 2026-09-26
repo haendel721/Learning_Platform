@@ -11,7 +11,7 @@ class Category(models.Model):
     class Meta:
         # Pluriel correct affiché dans l'admin Django
         # (sinon Django afficherait "Categorys")
-        verbose_name_plural = 'Categories'
+        verbose_name_plural = "Categories"
 
     def save(self, *args, **kwargs):
         # Génère automatiquement le slug à partir du nom si absent,
@@ -22,17 +22,18 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class Course(models.Model):
     class Status(models.TextChoices):
-        DRAFT = 'draft', 'Brouillon'
-        PUBLISHED = 'published', 'Publié'
-        ARCHIVED = 'archived', 'Archivé'
+        DRAFT = "draft", "Brouillon"
+        PUBLISHED = "published", "Publié"
+        ARCHIVED = "archived", "Archivé"
 
     class Difficulty(models.TextChoices):
-        BEGINNER = 'beginner', 'Débutant'
-        INTERMEDIATE = 'intermediate', 'Intermédiaire'
-        ADVANCED = 'advanced', 'Avancé'
+        BEGINNER = "beginner", "Débutant"
+        INTERMEDIATE = "intermediate", "Intermédiaire"
+        ADVANCED = "advanced", "Avancé"
 
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
@@ -45,16 +46,16 @@ class Course(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='courses',
+        related_name="courses",
     )
 
     # on_delete=CASCADE : si le formateur (User) est supprimé,
     # ses cours sont supprimés aussi — cohérent car un cours
     # orphelin sans formateur n'a pas de sens ici
     instructor = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='courses_created',
+        related_name="courses_created",
     )
 
     status = models.CharField(
@@ -72,7 +73,7 @@ class Course(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']  # cours les plus récents en premier
+        ordering = ["-created_at"]  # cours les plus récents en premier
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -82,13 +83,14 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+
 class Lesson(models.Model):
     # related_name='lessons' permet d'écrire course.lessons.all()
     # pour récupérer toutes les leçons d'un cours facilement
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,  # si le cours est supprimé, ses leçons aussi
-        related_name='lessons',
+        related_name="lessons",
     )
 
     title = models.CharField(max_length=200)
@@ -109,10 +111,10 @@ class Lesson(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['order']  # les leçons s'affichent toujours dans l'ordre voulu
+        ordering = ["order"]  # les leçons s'affichent toujours dans l'ordre voulu
         # Un même cours ne peut pas avoir deux leçons avec le même slug
         # (mais deux cours différents peuvent avoir des leçons de même slug)
-        unique_together = ('course', 'slug')
+        unique_together = ("course", "slug")
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -124,23 +126,24 @@ class Lesson(models.Model):
         # pour distinguer les leçons de cours différents
         return f"{self.course.title} — {self.title}"
 
+
 class Enrollment(models.Model):
     student = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='enrollments',
+        related_name="enrollments",
     )
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='enrollments',
+        related_name="enrollments",
     )
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         # Empêche qu'un même étudiant s'inscrive deux fois au même cours —
         # la BDD elle-même refuse le doublon, pas juste une vérification côté code
-        unique_together = ('student', 'course')
+        unique_together = ("student", "course")
 
     def __str__(self):
         return f"{self.student.username} → {self.course.title}"

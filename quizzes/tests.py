@@ -6,35 +6,51 @@ from courses.models import Course, Lesson
 from .models import Quiz, Question
 from .tasks import generate_quiz_task
 
+# from rest_framework.test import APITestCase
+# from courses.models import Enrollment
+from .models import QuizAttempt
+
 
 class GenerateQuizTaskTests(TestCase):
     def setUp(self):
         # On prépare les données de base nécessaires à chaque test :
         # un formateur, un cours, une leçon avec du contenu
         self.formateur = User.objects.create_user(
-            username='prof', password='pass12345', role=User.Role.FORMATEUR,
+            username="prof",
+            password="pass12345",
+            role=User.Role.FORMATEUR,
         )
-        self.course = Course.objects.create(title='Cours test', instructor=self.formateur)
+        self.course = Course.objects.create(
+            title="Cours test", instructor=self.formateur
+        )
         self.lesson = Lesson.objects.create(
-            course=self.course, title='Leçon test', content='Contenu de test sur Django.',
+            course=self.course,
+            title="Leçon test",
+            content="Contenu de test sur Django.",
         )
-        self.quiz = Quiz.objects.create(lesson=self.lesson, title='En attente')
+        self.quiz = Quiz.objects.create(lesson=self.lesson, title="En attente")
 
-    @patch('quizzes.tasks.AIServiceRouter')
+    @patch("quizzes.tasks.AIServiceRouter")
     def test_generate_quiz_success(self, MockRouter):
         # On fabrique une fausse réponse IA, au format JSON attendu,
         # pour simuler ce que Groq/Gemini renverraient normalement
-        fake_response = json.dumps({
-            'title': 'Quiz sur Django',
-            'questions': [
-                {
-                    'text': 'Qu\'est-ce que Django ?',
-                    'question_type': 'qcm',
-                    'choices': ['Un framework', 'Un langage', 'Une base de données'],
-                    'correct_answer': 'Un framework',
-                }
-            ],
-        })
+        fake_response = json.dumps(
+            {
+                "title": "Quiz sur Django",
+                "questions": [
+                    {
+                        "text": "Qu'est-ce que Django ?",
+                        "question_type": "qcm",
+                        "choices": [
+                            "Un framework",
+                            "Un langage",
+                            "Une base de données",
+                        ],
+                        "correct_answer": "Un framework",
+                    }
+                ],
+            }
+        )
         # Le mock du router renvoie directement cette fausse réponse,
         # sans jamais faire de vrai appel réseau
         MockRouter.return_value.generate_text.return_value = fake_response
@@ -43,10 +59,10 @@ class GenerateQuizTaskTests(TestCase):
 
         self.quiz.refresh_from_db()
         self.assertEqual(self.quiz.status, Quiz.Status.READY)
-        self.assertEqual(self.quiz.title, 'Quiz sur Django')
+        self.assertEqual(self.quiz.title, "Quiz sur Django")
         self.assertEqual(self.quiz.questions.count(), 1)
 
-    @patch('quizzes.tasks.AIServiceRouter')
+    @patch("quizzes.tasks.AIServiceRouter")
     def test_generate_quiz_invalid_json_marks_failed(self, MockRouter):
         # Simule une IA qui répond n'importe quoi, pas du JSON valide —
         # ça arrive en pratique (modèle qui n'a pas respecté la consigne)
@@ -60,7 +76,7 @@ class GenerateQuizTaskTests(TestCase):
         self.assertEqual(self.quiz.status, Quiz.Status.FAILED)
         self.assertEqual(self.quiz.questions.count(), 0)
 
-    @patch('quizzes.tasks.AIServiceRouter')
+    @patch("quizzes.tasks.AIServiceRouter")
     def test_generate_quiz_both_providers_fail(self, MockRouter):
         # Simule le pire cas : Groq ET Gemini échouent tous les deux
         # (AIServiceRouter relève l'exception dans ce cas, cf. Jour 2)
@@ -70,3 +86,80 @@ class GenerateQuizTaskTests(TestCase):
 
         self.quiz.refresh_from_db()
         self.assertEqual(self.quiz.status, Quiz.Status.FAILED)
+
+
+class QuizAttemptScoringTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            username="eleve2",
+            password="pass12345",
+            role=User.Role.ETUDIANT,
+        )
+        formateur = User.objects.create_user(
+            username="prof2",
+            password="pass12345",
+            role=User.Role.FORMATEUR,
+        )
+        course = Course.objects.create(title="Cours scoring", instructor=formateur)
+        lesson = Lesson.objects.create(
+            course=course, title="Leçon scoring", content="..."
+        )
+        self.quiz = Quiz.objects.create(
+            lesson=lesson, title="Quiz scoring", status="ready"
+        )
+        self.question = Question.objects.create(
+            quiz=self.quiz,
+            text="2 + 2 = ?",
+            question_type="qcm",
+            choices=["3", "4", "5"],
+            correct_answer="4",
+        )
+
+    def test_correct_answer_gives_full_score(self):
+        attempt = QuizAttempt.objects.create(
+            quiz=self.quiz,
+            student=self.student,
+            answers={str(self.question.id): "4"},
+        )
+        self.assertEqual(attempt.calculate_score(), 100.0)
+
+    def test_wrong_answer_gives_zero_score(self):
+        attempt = QuizAttempt.objects.create(
+            quiz=self.quiz,
+            student=self.student,
+            answers={str(self.question.id): "3"},
+        )
+        self.assertEqual(attempt.calculate_score(), 0.0)
+
+    def test_no_qcm_questions_gives_zero(self):
+        empty_quiz = Quiz.objects.create(
+            lesson=self.quiz.lesson, title="Vide", status="ready"
+        )
+        attempt = QuizAttempt.objects.create(quiz=empty_quiz, student=self.student)
+        self.assertEqual(attempt.calculate_score(), 0.0)
+
+    def test_missing_answer_counts_as_wrong(self):
+        attempt = QuizAttempt.objects.create(
+            quiz=self.quiz,
+            student=self.student,
+            answers={},
+        )
+        self.assertEqual(attempt.calculate_score(), 0.0)
+
+    def test_partial_answers_with_multiple_questions(self):
+        question2 = Question.objects.create(
+            quiz=self.quiz,
+            text="3 + 3 = ?",
+            question_type="qcm",
+            choices=["5", "6", "7"],
+            correct_answer="6",
+        )
+        attempt = QuizAttempt.objects.create(
+            quiz=self.quiz,
+            student=self.student,
+            answers={
+                str(self.question.id): "4",
+                str(question2.id): "5",
+            },
+        )
+        self.assertEqual(attempt.calculate_score(), 50.0)

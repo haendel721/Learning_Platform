@@ -2,8 +2,10 @@ from rest_framework import viewsets, permissions
 from .models import Category, Course, Lesson
 from .permissions import IsInstructorOrReadOnly
 from .serializers import (
-    CategorySerializer, CourseListSerializer,
-    CourseDetailSerializer, LessonSerializer,
+    CategorySerializer,
+    CourseListSerializer,
+    CourseDetailSerializer,
+    LessonSerializer,
 )
 
 
@@ -22,7 +24,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     permission_classes = [IsInstructorOrReadOnly]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return CourseListSerializer
         return CourseDetailSerializer
 

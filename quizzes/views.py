@@ -8,25 +8,27 @@ from .tasks import generate_quiz_task
 from .serializers import QuizSerializer, QuizAttemptSerializer, SubmitAnswersSerializer
 from django.core.cache import cache
 
+
 class LessonQuizGenerateView(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [AIGenerationThrottle]
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def generate_quiz(self, request, pk=None):
         lesson = Lesson.objects.get(pk=pk)
 
         # On crée le Quiz tout de suite en status "pending" — ça donne
         # au client un ID à suivre immédiatement, avant même que l'IA
         # ait répondu (qui prendra 10-15 secondes en arrière-plan)
-        quiz = Quiz.objects.create(lesson=lesson, title='Génération en cours...')
+        quiz = Quiz.objects.create(lesson=lesson, title="Génération en cours...")
 
         generate_quiz_task.delay(lesson.id, quiz.id)
 
         return Response(
-            {'quiz_id': quiz.id, 'status': quiz.status},
+            {"quiz_id": quiz.id, "status": quiz.status},
             status=status.HTTP_202_ACCEPTED,
         )
+
 
 class QuizAttemptViewSet(viewsets.ModelViewSet):
     queryset = QuizAttempt.objects.all()
@@ -44,22 +46,23 @@ class QuizAttemptViewSet(viewsets.ModelViewSet):
         # l'utilisateur connecté, jamais une valeur envoyée par le client
         serializer.save(student=self.request.user)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def submit(self, request, pk=None):
         attempt = self.get_object()
 
         if attempt.submitted_at is not None:
             return Response(
-                {'detail': 'Cette tentative a déjà été soumise.'},
+                {"detail": "Cette tentative a déjà été soumise."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         serializer = SubmitAnswersSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        attempt.answers = serializer.validated_data['answers']
+        attempt.answers = serializer.validated_data["answers"]
 
         from django.utils import timezone
+
         attempt.submitted_at = timezone.now()
         # On calcule le score APRÈS avoir assigné answers, puisque
         # calculate_score() lit self.answers pour comparer
@@ -68,14 +71,15 @@ class QuizAttemptViewSet(viewsets.ModelViewSet):
 
         return Response(QuizAttemptSerializer(attempt).data)
 
+
 class QuizViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
-        quiz_id = kwargs['pk']
-        cache_key = f'quiz_detail_{quiz_id}'
+        quiz_id = kwargs["pk"]
+        cache_key = f"quiz_detail_{quiz_id}"
 
         # On vérifie d'abord si la réponse existe déjà en cache
         cached_data = cache.get(cache_key)

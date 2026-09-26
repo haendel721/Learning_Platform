@@ -10,7 +10,7 @@ class GeminiService(AIService):
 
     def generate_text(self, prompt: str) -> str:
         response = self.client.models.generate_content(
-            model='gemini-3.6-flash',
+            model="gemini-3.6-flash",
             contents=prompt,
         )
         return response.text

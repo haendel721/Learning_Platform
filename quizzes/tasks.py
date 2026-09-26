@@ -21,20 +21,22 @@ def generate_quiz_task(lesson_id, quiz_id):
 
         # L'IA peut parfois entourer le JSON de ```json ... ``` malgré la
         # consigne — on nettoie ça avant de parser, piège très courant
-        cleaned = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
+        cleaned = (
+            raw_response.strip().removeprefix("```json").removesuffix("```").strip()
+        )
         data = json.loads(cleaned)
 
-        quiz.title = data['title']
+        quiz.title = data["title"]
         quiz.status = Quiz.Status.READY
         quiz.save()
 
-        for i, q in enumerate(data['questions']):
+        for i, q in enumerate(data["questions"]):
             Question.objects.create(
                 quiz=quiz,
-                text=q['text'],
-                question_type=q.get('question_type', 'qcm'),
-                choices=q.get('choices'),
-                correct_answer=q['correct_answer'],
+                text=q["text"],
+                question_type=q.get("question_type", "qcm"),
+                choices=q.get("choices"),
+                correct_answer=q["correct_answer"],
                 order=i,
             )
 

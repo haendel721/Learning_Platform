@@ -10,16 +10,31 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('courses', '0003_enrollment'),
+        ("courses", "0003_enrollment"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Certificate',
+            name="Certificate",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('issued_at', models.DateTimeField(auto_now_add=True)),
-                ('enrollment', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='certificate', to='courses.enrollment')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("issued_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "enrollment",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="certificate",
+                        to="courses.enrollment",
+                    ),
+                ),
             ],
         ),
     ]

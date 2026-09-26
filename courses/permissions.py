@@ -17,5 +17,6 @@ class IsInstructorOrReadOnly(permissions.BasePermission):
 
         # Pour les méthodes d'écriture, on vérifie le rôle de l'utilisateur
         return request.user.is_authenticated and request.user.role in (
-            'formateur', 'admin',
+            "formateur",
+            "admin",
         )

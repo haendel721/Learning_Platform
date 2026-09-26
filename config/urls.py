@@ -14,25 +14,32 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from certificates.views import verify_certificate, EnrollmentCertificateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     # Toutes les routes users/urls.py seront préfixées par /api/auth/
-    path('api/auth/', include('users.urls')),
-    path('api/', include('courses.urls')),  
+    path("api/auth/", include("users.urls")),
+    path("api/", include("courses.urls")),
     # Génère le schéma OpenAPI brut (JSON)
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Interface Swagger visuelle, basée sur le schéma ci-dessus
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/', include('quizzes.urls')),
-    path('verify/<uuid:certificate_id>/', verify_certificate, name='verify-certificate'),
     path(
-        'api/enrollments/<int:enrollment_id>/certificate/',
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path("api/", include("quizzes.urls")),
+    path(
+        "verify/<uuid:certificate_id>/", verify_certificate, name="verify-certificate"
+    ),
+    path(
+        "api/enrollments/<int:enrollment_id>/certificate/",
         EnrollmentCertificateView.as_view(),
-        name='enrollment-certificate',
+        name="enrollment-certificate",
     ),
 ]

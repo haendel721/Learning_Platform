@@ -19,7 +19,7 @@ class Certificate(models.Model):
     enrollment = models.OneToOneField(
         Enrollment,
         on_delete=models.CASCADE,
-        related_name='certificate',
+        related_name="certificate",
     )
 
     issued_at = models.DateTimeField(auto_now_add=True)
@@ -33,22 +33,25 @@ class Certificate(models.Model):
         qr = qrcode.QRCode(box_size=6, border=2)
         qr.add_data(self.get_verification_url())
         qr.make(fit=True)
-        img = qr.make_image(fill_color='black', back_color='white')
+        img = qr.make_image(fill_color="black", back_color="white")
 
         # On encode l'image QR en base64 pour pouvoir l'insérer directement
         # dans le HTML avec une balise <img src="data:image/png;base64,...">,
         # sans avoir besoin de sauvegarder un fichier image séparé sur disque
         buffer = BytesIO()
-        img.save(buffer, format='PNG')
-        return base64.b64encode(buffer.getvalue()).decode('utf-8')
+        img.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
     def generate_pdf(self):
-        html_string = render_to_string('certificates/certificate.html', {
-            'student_name': self.enrollment.student.username,
-            'course_title': self.enrollment.course.title,
-            'issued_date': self.issued_at.strftime('%d/%m/%Y'),
-            'qr_code_base64': self.generate_qr_code_base64(),
-        })
+        html_string = render_to_string(
+            "certificates/certificate.html",
+            {
+                "student_name": self.enrollment.student.username,
+                "course_title": self.enrollment.course.title,
+                "issued_date": self.issued_at.strftime("%d/%m/%Y"),
+                "qr_code_base64": self.generate_qr_code_base64(),
+            },
+        )
         return HTML(string=html_string).write_pdf()
 
     def __str__(self):
