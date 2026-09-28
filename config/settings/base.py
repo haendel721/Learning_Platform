@@ -77,6 +77,12 @@ REST_FRAMEWORK = {
     },
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Learning Platform API',
+    'DESCRIPTION': 'API pour la plateforme e-learning SaaS avec IA générative',
+    'VERSION': '1.0.0',
+}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
