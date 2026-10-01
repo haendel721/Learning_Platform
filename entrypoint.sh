@@ -9,5 +9,11 @@ python manage.py migrate --noinput
 # Rassemble les fichiers statiques (servis par WhiteNoise)
 python manage.py collectstatic --noinput
 
+# Crée le superuser automatiquement à partir des variables d'environnement.
+# --noinput utilise DJANGO_SUPERUSER_USERNAME / _EMAIL / _PASSWORD.
+# "|| true" évite de planter le démarrage si l'admin existe déjà
+# (le script s'exécute à chaque déploiement).
+python manage.py createsuperuser --noinput || true
+
 # Lance le serveur applicatif (adapte le nom du module si besoin : config.wsgi)
 exec gunicorn config.wsgi:application --bind 0.0.0.0:8000
