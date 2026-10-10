@@ -6,6 +6,7 @@ from ai_service.prompts import QUIZ_GENERATION_PROMPT
 from courses.models import Lesson
 from .models import Quiz, Question
 from django.core.cache import cache
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -27,19 +28,26 @@ def generate_quiz_task(lesson_id, quiz_id):
         )
         data = json.loads(cleaned)
 
-        quiz.title = data["title"]
-        quiz.status = Quiz.Status.READY
-        quiz.save()
+        # NOUVEAU : atomic() = tout ou rien. Soit toutes les questions ET
+        # le passage en "ready" sont enregistrés, soit rien (si une question
+        # plante, tout est annulé). Un client ne verra donc jamais un quiz
+        # "ready" avec des questions manquantes.
+        with transaction.atomic():
+            # 1) On crée d'abord les questions...
+            for i, q in enumerate(data["questions"]):
+                Question.objects.create(
+                    quiz=quiz,
+                    text=q["text"],
+                    question_type=q.get("question_type", "qcm"),
+                    choices=q.get("choices"),
+                    correct_answer=q["correct_answer"],
+                    order=i,
+                )
 
-        for i, q in enumerate(data["questions"]):
-            Question.objects.create(
-                quiz=quiz,
-                text=q["text"],
-                question_type=q.get("question_type", "qcm"),
-                choices=q.get("choices"),
-                correct_answer=q["correct_answer"],
-                order=i,
-            )
+            # 2) ...et seulement APRÈS, on passe le quiz en "ready"
+            quiz.title = data["title"]
+            quiz.status = Quiz.Status.READY
+            quiz.save()
 
     except Exception:
         # Si l'IA renvoie un JSON mal formé, ou que les deux providers
