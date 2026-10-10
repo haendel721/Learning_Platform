@@ -1,0 +1,23 @@
+# Configuration de coverage.py
+
+[run]
+# Ne mesure que le code de ton projet
+source = .
+# Fichiers exclus de la mesure :
+# migrations générées, fichiers de tests, manage.py, venv, config WSGI/ASGI
+omit =
+    */migrations/*
+    */tests.py
+    */tests/*
+    manage.py
+    venv/*
+    .venv/*
+    config/wsgi.py
+    config/asgi.py
+    config/settings/prod.py
+
+[report]
+# Lignes jamais comptées comme "à tester"
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:

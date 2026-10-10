@@ -18,3 +18,7 @@ staticfiles/
 
 # Django settings (au cas où)
 config/settings/local.py
+
+# Fichiers générés par coverage.py
+.coverage
+htmlcov/

@@ -9,6 +9,15 @@ from unittest.mock import patch
 
 
 class RegisterTests(APITestCase):
+    def setUp(self):
+        # Remplace la tâche Celery par un faux objet pendant chaque test.
+        # On patche "users.views.send_welcome_email" : c'est là que la
+        # tâche est UTILISÉE (pas là où elle est définie).
+        patcher = patch("users.views.send_welcome_email")
+        self.mock_send_email = patcher.start()
+        # addCleanup garantit que le patch est retiré à la fin du test
+        self.addCleanup(patcher.stop)
+        
     def test_register_creates_user_with_hashed_password(self):
         # On vérifie que l'inscription fonctionne ET que le mot de passe
         # n'est jamais stocké en clair (piège classique si on utilise
@@ -27,6 +36,8 @@ class RegisterTests(APITestCase):
         self.assertNotEqual(user.password, "motdepasse123")
         # check_password() vérifie le hash, c'est la bonne façon de tester ça
         self.assertTrue(user.check_password("motdepasse123"))
+        # Vérifie que l'inscription déclenche bien l'envoi (sans l'exécuter)
+        self.mock_send_email.delay.assert_called_once()
 
     def test_register_default_role_is_etudiant(self):
         # Vérifie que le rôle par défaut est bien appliqué si on ne le précise pas
