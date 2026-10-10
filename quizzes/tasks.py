@@ -5,6 +5,7 @@ from ai_service.service import AIServiceRouter
 from ai_service.prompts import QUIZ_GENERATION_PROMPT
 from courses.models import Lesson
 from .models import Quiz, Question
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -47,3 +48,10 @@ def generate_quiz_task(lesson_id, quiz_id):
         logger.error("Échec de génération du quiz %s", quiz_id, exc_info=True)
         quiz.status = Quiz.Status.FAILED
         quiz.save()
+
+    finally:
+        # S'exécute dans TOUS les cas (succès ou échec) : on supprime la
+        # version en cache de ce quiz, sinon les clients continueraient à
+        # voir l'ancien état "pending" pendant 7 jours.
+        # La clé doit être identique à celle de QuizViewSet.retrieve.
+        cache.delete(f"quiz_detail_{quiz_id}")
