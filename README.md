@@ -182,3 +182,14 @@ Pour tester les endpoints protégés dans Swagger :
 1. Récupérer un token via /api/auth/login/
 1. Cliquer sur **Authorize** en haut à droite
 1. Saisir `Bearer <ton_token>`
+
+## Démo en ligne
+
+- Application : https://learning-platform-5cjc.onrender.com
+- Documentation de l'API (Swagger) : https://learning-platform-5cjc.onrender.com/api/docs/
+- Documentation de l'API (Swagger) : https://learning-platform-5cjc.onrender.com/api/docs/
+- Administration : https://learning-platform-5cjc.onrender.com/admin/
+
+
+> Hébergée sur le plan gratuit de Render : la première requête peut
+> prendre 30 à 60 secondes si le service était en veille.
