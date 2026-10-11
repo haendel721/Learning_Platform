@@ -17,7 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView, SpectacularRedocView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 from certificates.views import verify_certificate, EnrollmentCertificateView
 
 urlpatterns = [
@@ -33,7 +37,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("api/", include("quizzes.urls")),
     path(
         "verify/<uuid:certificate_id>/", verify_certificate, name="verify-certificate"

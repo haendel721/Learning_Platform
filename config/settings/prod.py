@@ -1,5 +1,4 @@
 from .base import *  # noqa: F403, F405
-import pathlib
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

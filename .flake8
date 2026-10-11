@@ -1,0 +1,23 @@
+# Configuration de flake8, alignée sur Black
+
+[flake8]
+# Black formate à 88 caractères : flake8 doit accepter la même limite
+max-line-length = 100
+
+# Dossiers ignorés : environnement virtuel, migrations générées, caches
+exclude =
+    venv,
+    .venv,
+    */migrations/*,
+    staticfiles,
+    __pycache__
+
+# E203 : conflit connu entre flake8 et Black (espaces avant ":")
+extend-ignore = E203
+
+# Les fichiers de settings utilisent "from .base import *" volontairement :
+# flake8 ne peut alors pas savoir d'où vient "env" (F405), et ne doit
+# pas non plus se plaindre de l'import étoile (F403).
+per-file-ignores =
+    config/settings/dev.py: F403, F405
+    config/settings/prod.py: F403, F405
